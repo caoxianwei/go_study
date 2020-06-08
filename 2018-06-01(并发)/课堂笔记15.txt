@@ -1,0 +1,131 @@
+上节课回顾：
+一：并发的概念*****
+	并发：
+	并行：，
+	串行：
+
+	进程，线程，协程：***
+
+二：go语言实现并发：*****
+
+三：语法
+	go 函数名()
+
+四：Channel：*****
+	1.Channel
+	2.语法
+	3.关闭
+	4.for range chan
+	5.缓存通道：*****
+		make(chan Type,size)
+			缓冲区满，才会阻塞
+		非缓存通道：即时阻塞：<-chan ,chan <- 
+
+	6.定向通道：***
+		单向通道：
+			默认创建的通道：双向
+				<- chan
+				chan <- 
+			只读通道：receive-only
+				<- chan Type 
+			只写通道：send-only
+				chan <- Type
+	7.其他
+		time包：****
+			Timer：计时器
+				公共的字段：C是<- chan Time
+			Timer(duration)
+
+			time.After(duration)--> <- chan Time
+
+		select语句：****
+			专门用于chan通道读或写的分支语句，同switch类似
+			select {
+			case chan的读或写：
+			case chan的读或写：
+			。。
+			[default]
+			}
+
+			如果有多个case都可以执行，那么随机选择一个。
+			如果没有case可以执行，会执行default，如果没有default，会等待直到有case可以执行。
+
+		select可以配合Time
+		配合for循环
+
+五：sync包
+	1.WaitGroup：*****
+		同步等待组：
+		counter计数器：0
+			Add()：设置counter的值
+			Done()：将counter的数值减一
+			Wait()，等待。先判断counter计数器的值，如果值为0，不等待直接向下执行，否则处于等待阻塞，直到counter值为0
+
+
+		goroutine：
+			wg.Add(n)
+
+			go func(){
+
+				wg.Done()//
+			}
+			....
+
+			wg.Wait()
+
+	2.Mutex
+		互斥锁：sync.Mutex
+			上锁，解锁
+			Lock()
+			Unlock()
+		读写锁：sync.RWMutex
+
+
+		共享数据的安全问题：一个共享的数据，被多个goroutine来访问，那么该数据是不安全
+			g1--->n
+				100--->200
+			g2--->n
+				200
+
+		互斥锁：mutex.Lock()，mutex.Unlock()
+			当前的goroutine能够执行，其他尝试访问的goroutine全部阻塞，直到当前的groutine解锁
+
+			g1,g2,g3
+				g1-->Lock()
+				g1-->Unlock()
+
+
+		读写锁：将读，写动作分开
+			Lock(),写锁定
+			Unlock()，写解锁
+
+			RLock()，读锁定
+			RUnlock()，读解锁
+
+			
+
+
+
+	3.条件变量：**
+	4.原子性操作：**
+	5.只执行一次：**
+	6.临时对象池：**
+
+
+
+
+	goroutine
+		阻塞：
+			读键盘
+				--->键盘输入
+			waitgroup wait()
+				--->conter=0
+					Add(),Done()
+			chan读写
+				-->写读
+			cond wait()
+				--->Single(),Broadcast()
+
+
+本堂课内容：
+总结

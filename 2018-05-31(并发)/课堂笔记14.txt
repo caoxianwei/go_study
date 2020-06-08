@@ -1,0 +1,204 @@
+上节课回顾：
+并发，并行，串行
+
+并发：
+并行：真正的同时执行
+串行：
+
+进程：process
+	一个正在执行的程序
+线程：thread
+	轻量级的进程，进程中的一条执行路径
+协程：coroutine
+	轻量级的线程，
+
+
+go语言：
+	goroutine
+
+	高并发：
+		A：goroutine，轻量级，
+		B：go语言的语法级别的支持：
+			go 关键字
+
+	go程序的执行流程
+		创建主goroutine，init(),main()...
+		子goroutine，执行对应的函数
+			语法：
+				go 函数名()
+
+		子goroutine，主goroutine
+
+			time.Sleep(d)
+
+	通道：Channel
+		用于goroutine传递消息。
+
+	语法：make()
+			chan Type
+		nil 通道无法使用，同map类似。
+
+	一个goroutine写入数据，另一个goroutine读取数据
+		写入：chan <- data
+		读取：data := <- chan
+
+	以上两个操作都是阻塞式
+	channel同步安全的，同一时刻，只能有一个goroutine来操作。
+
+	1.创建通道
+		ch1 := make(chan int)
+
+	2.某一个goroutine写入数据，另一个读取数据
+		ch1 <- 100
+
+		data ,ok := <- ch1
+			ok,true，通道正常，data有效数据
+			   false，通道不正常，data是一个零值
+
+	3.通道的关闭
+		发送方，不停的写入数据
+			循环发送，循环结束，发送停止写入
+			最后需要关闭通道，用于通知接收方没有数据写入了。
+
+		接收方，不停的读取数据
+			死循环，读取数据，根据ok的值来判断，是否已经结束。
+
+			通道关闭：
+				接收方：能读么？
+					零值，false
+					。。
+				发送方：能写么？
+					不能再写入数据，否则panic，send on closed channel
+
+
+	4.range chan
+		for{
+			data,ok := <- chan
+			if !ok {
+				break
+			}
+
+		}
+
+		for data:=range chan{//停止？直到对方关闭通道为止。
+			data
+		}
+
+
+
+本堂课内容：
+1.并发的概念
+2.go语言的实现
+3.channel
+	A：通道的概念
+	B：通道的操作：创建，写入，读取，关闭。。
+	C：缓冲通道
+	D：定向通道
+	E：生产者消费者模型
+		线程：生产者，消费者
+			生产产品，消费者消费产品
+
+			母鸡：生产者
+			产品：鸡蛋
+			吃货：消费者
+			商店：存储一定容量的鸡蛋
+
+4.time包
+5.if，switch，select
+
+switch 变量{
+	case 数值1：。。。
+	case 数值2：。。。
+	。。
+	default：
+		。。。
+}
+switch执行流程：
+
+select
+
+
+5.sync同步包
+	同步：sync
+		one by one
+		串行
+	异步：async
+		同时执行
+
+
+	WaitGroup：同步等待组
+		内置的计数器：要执行的goroutine的数量
+		Add(-3),设置计数器的数量
+		Done(),将内置的计数器的数值减1。同Add(-1)
+
+		Wait(),等待，导致执行wait的goroutine进入阻塞状态。同步等待组中的计数器的值为0解除阻塞。
+
+
+	Add(3) //goroutine
+	。。。
+	子goroutine：函数，最后一行Done()
+
+	wait() //
+
+总结和作业：
+1.channel
+	A：缓存通道：make(chan Type,size)
+			缓存区满，才会阻塞
+		非缓存通道：即时阻塞，写，读
+	B：定向通道，也叫单向通道
+		用法：参数传递的时候，限制某个函数中的只能读或写。
+		make(chan Type)-->双向
+			chan <- data
+			<- chan
+
+		只读：<- chan Type 
+		只写：chan <- Type
+
+
+
+2.time包
+	A：定时器Timer
+		C <-chan Time
+
+		创建一个定时器(时间间隔)，通过C读取通道中数据
+
+	B：time.After(时间间隔)--><-chan Time
+
+3.select
+	专门用于执行通道操作的分支语句
+	select {
+	case 通道读/写操作：
+	case 通道读/写操作：
+	case 通道读/写操作：
+	。。
+	default
+	}
+
+	select，如果多个case都能够执行，会随机选择一个。
+	如果没有case可以执行，会执行default，如果没有default，会阻塞，直到有可执行的case为止。
+
+4.sync包
+	同步：
+
+	waitGroup：同步等待组
+		计数器：counter：0
+
+		Add(),设置counter的值：正数，负数
+		Done()，将counter计数器的值减1。
+		Wait(),先检测counter的值，如果为0，无效果，否则进入阻塞，直到counter为0.
+
+
+	共享数据的安全问题：
+	多个goroutine，操作共享的同一个数据，该数据不安全的。
+		方法一：上锁
+			互斥锁：sync.Mutex
+				Lock(),
+					一个goroutine执行了lock(),那么其他的goroutine如果要执行lock(),会进入阻塞状态。直到当前的goroutine解锁
+				Unlock(),一次锁定，对应一次解锁，对于一个没有锁定的，不能再次解锁。
+
+
+
+
+
+
+

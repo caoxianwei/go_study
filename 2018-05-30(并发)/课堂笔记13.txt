@@ -1,0 +1,320 @@
+上节课回顾：
+1.panic()和recover()
+	panic恐慌，打断程序的正常执行
+		panic(value)
+	recover恢复，恢复程序的执行
+		recover()-->value/nil
+
+	设计函数的时候/api中包的函数
+		多一个返回值：error
+
+
+2.time包
+	A：获取time.Time对象
+		time.Now()
+		time.Date()
+
+	B：time--->string
+		t1.Format("模板：612345")-->string
+	   string--->time
+	    time.Parse("模板",src)-->time,error
+
+	C：时间戳：timeStamp，time，距离1970年1月1日时间差值
+		t1.Unix()
+		t1.UnixNano()
+
+	D：获取对应的信息
+		t1.Date()-->year,month,day
+		t1.Clock()-->hour,minute,second
+		t1.Year(),t1.Month(),t1.day()
+		t1.Hour(),t1.Minute(),t1.Second()
+
+	E：时间间隔：duration
+		type duration int64
+
+		var i int64 = 100
+		time.Duration(i)
+
+		t1.Add(d)-->t2
+		t1.Sub(t2)-->d
+
+		time.Sleep(d)
+
+		1ns:time.NanoSecond
+		1m:time.Minute*10
+
+		time.Minute*10 + time.Second*50 + time.Hour*24
+
+
+
+3.文件操作
+	A：file的信息：fileInfo
+		Name(),IsDir(),Size(),Mode(),ModTime()
+
+		文件：文件，目录
+			文件：存储数据，大小，格式(后缀)
+				aa.txt，文本文件
+					abcdefg面朝大海
+				bb.mp3，音频文件
+				cc.mp4，视频文件
+				dd.jpg，图片文件
+				ee.gif，动态图
+				ff.rar，压缩文件
+				...
+				文件的类型：根据文件的类型，选择对应的程序操作文件
+
+				本质：存储都是二进制数据
+
+			目录：文件所在的位置，文件夹
+				/home/ruby/文档/pro
+
+	B：file的操作：
+		路径：相对relative，相对当前的工程，绝对absolute，从跟目录开始/
+		创建文件夹：os.mkdir(),os.mkdirall()
+		创建文件：os.create()-->*file
+		关闭文件：file.Close(),断开程序和文件的连接
+		删除文件：remove(),removeAll()
+	C：file的读写：I/O操作
+		从文件中将数据，读入到程序中：input
+			Read()
+		从程序中将数据，存储到文件中：output
+			Write()
+
+		操作步骤：
+		step1：程序和文件建立连接：
+			os.Open(filename)-->*file,error
+			os.OpenFile(filename,mode,perm)-->*file,error
+
+			filename:文件名字(相对，绝对)
+			mode：打开模式
+				只读，只写，可读可写，新建，追加。。
+			perm：当文件不存在时，创建文件需要制定权限
+				-rwxr--r--
+				0777,0666,0644
+					r：4
+					w：2
+					x：1
+					-：0
+
+		
+		step3：关闭连接，断开资源
+			defer file.Close()
+
+		step2：IO操作，读数据，写数据
+			io包：Reader，Writer  接口
+				Read(),Write()
+
+			file对象，实现了Read(),Write()
+				Read([] byte)-->n,error
+					从文件中读取最多len(byte)个字节的数据，存入到byte数组里，返回值n是实际读入的数量
+				ReadAt([]byte,offset)-->n,error
+
+				Write([]byte)-->n,error
+					向文件中开始写出数据，写出数组byte中的所有数据，n是实际写出的数据。
+					write(bs[:10])
+
+				WriteString(string)
+
+				Seek(offset,whence),设置指针光标的位置
+					offset,偏移量
+					whence，0从头，1当前位置，2末尾
+
+			bufio包：带缓存的io操作
+				io包中的Reader，Writer--->bufio包中Reader，Writer
+本质：将一个字节数组作为一个缓冲区，内存
+
+				ReadBytes()-->[]byte,err
+				ReadString()-->string,err
+				Write()
+				WriteString()
+				flush(),刷新
+
+			ioutil包：
+				ReadFile(filename)-->data[]byte
+				ReadAll()-->
+				ReadDir()-->获取文件夹下的子内容：子文件，子目录
+				WriteFile(filename,data,mode)
+
+
+
+				path包，filepath
+				join
+
+本堂课内容：
+周三：并发
+多任务：
+	同时执行多个程序
+
+	程序的执行：CPU，内存
+
+	单核CPU：执行程序的过程
+			将自己的时间切割成时间片(一小段时间)，执行一个程序。同一时间点，cpu执行一个程序。
+
+	双核，多核
+
+		有道，录屏，markdown。。。
+
+
+并发：能够执行多个程序。
+	Concurrency是同时处理许多事情的能力
+	A
+		B
+			C
+				A
+					C
+并行：(parallelism)
+	同时执行多个程序--->硬件设备支持
+	A
+	B
+	C
+
+串行：同步
+	一个接一个的执行
+	A--B--C
+
+
+并发：
+	多个程序"同时"执行。
+
+
+进程Process，
+	一个正在执行的程序
+
+线程Thread
+	一个进程中的一条执行路径
+
+	主线程：main
+	子线程：工作线程
+
+
+协程Coroutine
+	轻量级的用户线程
+
+
+
+程序：
+进程：将程序执行起来，进程
+
+word文档-->进程
+	单词首字母大写-->线程
+	拼写错误-->线程
+
+go语言号称：高并发
+	A：实现并发：goroutine，轻量级的协程
+	B：语法简单轻便：go关键字 函数
+
+
+go代码的执行过程：
+go的程序执行：
+	1.启动主goroutine，执行main()函数。当mian结束，主goroutine随之结束。程序结束
+	2.用于启动的goroutine，叫子goroutine。
+
+
+
+
+
+
+周四：并发
+周五：并发+考试
+
+
+
+总结和作业：
+遍历目录，断点续传--->
+	附加题：移动一个文件夹(剪切)
+	世界杯：一个本地文件：message.txt
+	      循环从键盘上接收输入的年份：
+	      		根据文件中的数据，判断是否举办了世界杯，
+	      			输出举办地和冠军国，否则输出该年份没有举办世界杯
+
+	      		2000，没有举办
+	      		2006，举办地：德国，冠军国：意大利
+	      		2009，没有举办
+	      		。。
+	      		over
+
+
+	     文件数据读取到程序中--->
+	     	切片：string
+
+	     	map：key：年份，value举办地冠军国
+
+
+1.并发的概念
+	并发：Concurrency是同时处理许多事情的能力
+
+	并行：parallelism同时执行多个程序--->硬件设备支持
+
+	串行：一个一个的执行
+
+2.进程，线程，协程
+	A：Process，一个正在执行的程序
+	B：Thread，进程中的一条执行路径，控制单元
+	C：Coroutine，轻量级的线程
+
+3.go的高并发
+	goroutine：
+	go语言的语法：简洁
+		go
+
+
+4.语法
+	主goroutine：系统自动创建，初始化一些任务。。执行main()
+	子goroutine：go 函数名()
+			创建一个goroutine，并执行对应的函数
+
+			子goroutine中的执行的函数，没有返回值。
+
+
+5.channel
+	通道：通途专门用于多个goroutine之间传递数据的。
+		go推崇观点：不应该通过共享内存实现数据传递，而应该是通过数据传递实现共享内存。
+
+	语法：make(chan Type)-->chan对象，属于引用类型。
+
+	操作：读数据<-chan，写数据chan <- data
+
+	阻塞：
+		读取，写出都是阻塞式，指导另一个goroutine写出或读取数据来解除阻塞
+
+	数据安全：只能允许一个goroutine来操作chan
+
+
+	关闭通道：close(chan),发送方关闭通道，用于通知接收方法没有数据了。
+	循环读取通道中的数据：
+		for true{
+			data,ok := <- chan
+			ok：true，data是有效的数据
+			    false，通道是关闭的，data是零值
+		}
+
+		for data:=range chan{//对方关闭通道
+
+		}
+
+
+go1：下载
+
+go2：解析
+
+go3：存储
+
+
+预习：
+缓存通道，定向通道。。。。
+同步：
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

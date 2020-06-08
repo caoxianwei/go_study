@@ -1,0 +1,248 @@
+上节课回顾：
+方法：method
+	定义类别的行为功能。类似于函数
+
+function：独立功能的一段代码。
+	fun()
+
+method：定义类的行为功能。
+	Person，方法()
+
+
+func 函数名(形参列表)(返回值列表){}
+func (接受者)方法名(形参列表)(返回值列表){}
+
+
+
+接口
+interface,方法的定义的集合。
+	行为功能的描述：方法的定义
+	行为功能的实现：方法的实现
+
+
+	接口---->实现类：
+
+
+接口的用法：
+	1.容器类型，存储该接口的实现类的对象
+	2.函数的参数，可以传入任意实现类的对象
+	3.函数的返回值，返回任意实现类的对象
+
+多态：
+	实现类的对象--->接口类型
+		访问接口中的方法
+	实现类的对象--->实现类类型
+		访问实现类的方法和属性
+
+	type A interface{
+		method()
+	}
+
+	type B struct{
+
+	}
+	func (b B) method(){}
+
+	type C struct{
+
+	}
+	func (c C) method(){}
+
+	var a1 A = B{}
+		a1.接口中的方法
+	var b1 B = B{}
+		b1.方法和属性
+	var a2 A = C{}
+
+
+转型：
+	A：接口对象.(实际类型)
+		ins,ok:=a1.(B)
+		ins就是a1转为B类型的对象
+	B：接口对象.(type),switch语句
+		switch ins:=a1.(type){
+		case A:
+		case B:
+		....
+		}
+
+空接口：没有定义方法的接口。用于做任意类型
+
+
+
+	struct，array，slice，int---->interface{}
+
+
+
+error：错误
+	通常一个函数或方法的返回值之一。用于表示方法或函数的执行情况。
+		执行正常：error--->nil
+		非正常：error--->类型的对象
+
+	error：一个内置的接口
+	type error interface{
+		Error() string
+	}
+
+	type errorString struct{
+
+	}
+
+	fmt包：fmt.Errorf(string)-->*errorString
+	errors包：errors.New(string)-->*errorString
+
+	自定义错误类型
+	type errorMy struct{
+		//
+	}
+	type (e *errorMy)Error()string{
+
+	}
+
+
+
+本堂课内容：
+1.panic(),recover()
+	恐慌和恢复
+2.time包
+	时间，日期
+
+授之以鱼不如之以渔
+
+
+3.文件的操作：
+	
+
+/Users/ruby/Documents/golang/1803/2018-05-28(interface)/课堂内容
+
+C:/ruby/pro/aa.txt
+
+文件的信息：fileInfo
+文件的常规操作：
+	创建文件夹，创建文件，删除文件，打开文件，关闭文件
+文件的读
+文件的写
+seek()
+文件的复制
+ioutil包：
+bufio包：
+
+	作业1：断点续传
+	作业2：遍历给定的文件夹(包含子文件夹)
+
+
+
+os包
+io包
+ioutil包
+bufio包
+
+fmt.Scanln()
+
+
+
+文件：378字节
+bs：100
+		读	写	剩余
+1次：	100	100	278
+2次：	100	100	178
+3次：	100	100	78
+4次：	78	78	0
+5次		EOF
+
+
+
+总结和作业：
+1.panic(),recover()
+	panic(),recover(),
+
+	panic,恐慌，导致程序中断执行，直到recover来恢复程序。
+	defer函数中，recover()-->返回值
+
+2.time包
+	A：时间
+		time.Now()
+		time.Date()
+	B：转换：time<--->string
+		time-->string
+			t1.Format("模板：2006，1，2，3，4，5")-->string
+		string-->time
+			time.Parse("模板",src)-->time,error
+
+	C：时间戳：timeStamp
+		time距离指定1970年1月1日0点0分0秒的时间差值
+			秒：t1.Unix()
+			纳秒：t1.UnixNano()
+
+	D：获取指定的内容：
+		t1.Date()-->year,month,day
+		t1.Clock()-->hour,minute,second
+		t1.year(),
+		t1.month()
+		t1.day()
+		t1.Week()
+		t1.hour()
+		t1.minute()
+		t1.second()
+		..
+	E：时间间隔：
+		Duration  int64
+		t1.Add(d)-->t2
+		t1.Sub(t2)-->d
+
+	F：睡眠：
+		time.Sleep(d)
+
+3.io读写
+	A：文件的信息
+		os.Stat()-->fileinfo
+			Name(),isDir(),size(),mode(),modtime()..
+
+	B：文件的常用操作
+		a)路径：绝对/home/ruby/...，相对，相对于当前工程
+		b)创建文件夹：
+			os.mkdir()
+			os.mkdirAll()
+		c)创建文件
+			os.Create()
+		d)打开文件
+			os.Open()
+			os.OpenFile()
+		e)文件关闭
+			file.Close()
+		f)删除：
+			remove()
+			removeAll()
+
+	C：文件的读和写
+		打开文件的模式：
+		文件不存在需要权限：0777-->rwx
+		file对象
+		Read([]byte)-->n,error
+		Write([]byte)-->n,error
+		WriteString(string)-->n,error
+		seek(offset,whence)
+
+	D：包
+		io包：
+			Reader接口，Write接口
+
+			io.copy()
+
+		bufio包：将io包下的Reader和Write进一步封装，带缓存的Reader和Write，实现高效的读和写
+			ReadBytes()
+			ReadString()
+			ReadLine()
+
+		ioutil包：
+			ReadFile()
+			WriteFile()
+			ReadDir()
+			ReadAll()
+
+
+
+
+
+
+
